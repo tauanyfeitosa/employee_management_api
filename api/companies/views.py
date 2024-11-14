@@ -1,14 +1,11 @@
-from django.core.exceptions import FieldError
-from rest_framework.exceptions import ValidationError
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
-from core.serializers.company_serializer import CompanySerializer, CompanyListSerializer, CompanyDetailsSerializer, \
-    CompanyUpdateSerializer
+from core.serializers.company_serializer import CompanySerializer,  CompanyDetailsSerializer, \
+    CompanyUpdateSerializer, CompanyFilteredSerializer
 from core.serializers.jwt_serializer import CustomTokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
-from core.models.company import Company
-from core.use_cases.company.get_companies_use_case import GetCompaniesUseCase
+from core.entities.company import Company
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
@@ -53,24 +50,20 @@ class ApproveCompanyView(generics.UpdateAPIView):
 
 class AllCompaniesView(generics.ListAPIView):
     permission_classes = [IsAdminUser]
-    serializer_class = CompanyListSerializer
-    use_case = GetCompaniesUseCase()
+    serializer_class = CompanyFilteredSerializer
 
     def get_queryset(self):
-        return self.use_case.execute()
+        filters = None
+        return CompanyFilteredSerializer.get_filtered_queryset(filters=filters)
 
 
 class FilteredCompaniesView(generics.ListAPIView):
     permission_classes = [IsAdminUser]
-    serializer_class = CompanyListSerializer
-    use_case = GetCompaniesUseCase()
+    serializer_class = CompanyFilteredSerializer
 
     def get_queryset(self):
         filters = self.request.query_params.dict()
-        try:
-            return self.use_case.execute(filters=filters)
-        except FieldError as e:
-            raise ValidationError({"detail": str(e)})
+        return CompanyFilteredSerializer.get_filtered_queryset(filters=filters)
 
 
 class CompanyDetailView(generics.RetrieveAPIView):

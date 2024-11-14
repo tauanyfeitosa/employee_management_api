@@ -1,6 +1,9 @@
+from django.core.exceptions import FieldError
 from rest_framework import serializers
-from core.models.company import Company
+from core.entities.company import Company
 from validate_docbr import CNPJ
+
+from core.use_cases.company.get_companies_use_case import GetCompaniesUseCase
 
 
 class CompanySerializer(serializers.ModelSerializer):
@@ -31,10 +34,20 @@ class CompanyDetailsSerializer(serializers.ModelSerializer):
                   'neighborhood', 'city', 'state', 'country', 'is_active', 'is_approved']
 
 
-class CompanyListSerializer(serializers.ModelSerializer):
+
+class CompanyFilteredSerializer(serializers.ModelSerializer):
     class Meta:
         model = Company
-        fields = ['id', 'cnpj', 'business_name', 'is_active', 'is_approved']
+        fields = ['id', 'cnpj', 'business_name', 'is_approved', 'is_active']
+
+    @classmethod
+    def get_filtered_queryset(cls, filters=None):
+        """Chama o use case para obter o queryset filtrado."""
+        use_case = GetCompaniesUseCase()
+        try:
+            return use_case.execute(filters=filters)
+        except FieldError as e:
+            raise serializers.ValidationError({"detail": str(e)})
 
 
 class CompanyUpdateSerializer(serializers.ModelSerializer):
@@ -42,7 +55,6 @@ class CompanyUpdateSerializer(serializers.ModelSerializer):
         model = Company
         exclude = ['password', 'cnpj', 'id', 'name']
 
-    # Torna os campos opcionais para a atualização parcial
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
@@ -52,7 +64,6 @@ class CompanyUpdateSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         for attr, value in validated_data.items():
-            # Atualiza apenas se o valor não for None ou vazio
             if value not in [None, '', []]:
                 setattr(instance, attr, value)
         instance.save()

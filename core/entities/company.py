@@ -1,6 +1,8 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
 from validate_docbr import CNPJ as CNPJValidator
+from django.utils import timezone
+
 
 class CompanyManager(BaseUserManager):
     def create_user(self, cnpj, password=None, **extra_fields):
@@ -43,11 +45,21 @@ class Company(AbstractBaseUser, PermissionsMixin):
     is_approved = models.BooleanField(default=False)
     is_active= models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    deactivated_at = models.DateTimeField(null=True, blank=True)
 
     USERNAME_FIELD = "cnpj"
     REQUIRED_FIELDS = ["name", "business_name"]
 
     objects = CompanyManager()
+
+    def save(self, *args, **kwargs):
+        if not self.is_active and self.deactivated_at is None:
+            self.deactivated_at = timezone.now()
+        elif self.is_active and self.deactivated_at is not None:
+            self.deactivated_at = None
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"Company: {self.cnpj} - {self.business_name}"
