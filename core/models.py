@@ -1,1 +1,1 @@
-from .entities.company import Company
+from .models.company import Company

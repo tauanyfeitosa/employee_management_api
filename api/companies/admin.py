@@ -1,5 +1,5 @@
 from django.contrib import admin
-from core.entities.company import Company
+from core.models.company import Company
 
 
 @admin.register(Company)

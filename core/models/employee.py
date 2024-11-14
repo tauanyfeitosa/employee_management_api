@@ -1,5 +1,5 @@
 from django.db import models
-from core.entities.company import Company
+from core.models.company import Company
 
 class Employee(models.Model):
     cpf = models.CharField(max_length=11, unique=True)

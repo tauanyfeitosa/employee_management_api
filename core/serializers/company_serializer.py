@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from core.entities.company import Company
+from core.models.company import Company
 from validate_docbr import CNPJ
 
 

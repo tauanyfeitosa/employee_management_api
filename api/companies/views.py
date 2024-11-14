@@ -7,7 +7,7 @@ from core.serializers.company_serializer import CompanySerializer, CompanyListSe
     CompanyUpdateSerializer
 from core.serializers.jwt_serializer import CustomTokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
-from core.entities.company import Company
+from core.models.company import Company
 from core.use_cases.company.get_companies_use_case import GetCompaniesUseCase
 
 

@@ -1,4 +1,4 @@
-from core.entities.company import Company
+from core.models.company import Company
 from django.core.exceptions import FieldError
 
 
