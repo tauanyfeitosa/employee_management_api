@@ -30,15 +30,21 @@ class CreateOrUpdateEmployeeUseCase:
             raise ValidationError("The email is already being used by another employee.")
 
     @staticmethod
-    def validate_phone(phone_number, phone_ddd, phone_ddi):
-        """Valida o formato dos campos de telefone (número, DDD e DDI)."""
-        if not re.match(r"^\d{9}$", phone_number):
+    def validate_phone_number(phone_number):
+        """Valida o formato do número de telefone."""
+        if not phone_number or not re.match(r"^\d{9}$", phone_number):
             raise ValidationError("Invalid phone number. Must contain 9 digits.")
 
-        if not re.match(r"^\d{2}$", phone_ddd):
+    @staticmethod
+    def validate_phone_ddd(phone_ddd):
+        """Valida o formato do DDD."""
+        if not phone_ddd or not re.match(r"^\d{2}$", phone_ddd):
             raise ValidationError("Invalid DDD. Must contain 2 digits.")
 
-        if not re.match(r"^\d{1,3}$", phone_ddi):
+    @staticmethod
+    def validate_phone_ddi(phone_ddi):
+        """Valida o formato do DDI."""
+        if not phone_ddi or not re.match(r"^\d{1,3}$", phone_ddi):
             raise ValidationError("Invalid DDI. Must contain 1 to 3 digits.")
 
     @staticmethod

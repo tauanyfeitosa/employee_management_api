@@ -17,19 +17,19 @@ class BaseEmployeeSerializer(serializers.ModelSerializer):
     def validate_phone_number(self, value):
         phone_ddd = self.initial_data.get("phone_ddd", None)
         phone_ddi = self.initial_data.get("phone_ddi", None)
-        CreateOrUpdateEmployeeUseCase.validate_phone(value, phone_ddd, phone_ddi)
+        CreateOrUpdateEmployeeUseCase.validate_phone_number(value)
         return value
 
     def validate_phone_ddd(self, value):
         phone_number = self.initial_data.get("phone_number", None)
         phone_ddi = self.initial_data.get("phone_ddi", None)
-        CreateOrUpdateEmployeeUseCase.validate_phone(phone_number, value, phone_ddi)
+        CreateOrUpdateEmployeeUseCase.validate_phone_ddd(value)
         return value
 
     def validate_phone_ddi(self, value):
         phone_number = self.initial_data.get("phone_number", None)
         phone_ddd = self.initial_data.get("phone_ddd", None)
-        CreateOrUpdateEmployeeUseCase.validate_phone(phone_number, phone_ddd, value)
+        CreateOrUpdateEmployeeUseCase.validate_phone_ddi(value)
         return value
 
     def validate_hire_date(self, value):
@@ -44,7 +44,7 @@ class BaseEmployeeSerializer(serializers.ModelSerializer):
 class CreateEmployeeSerializer(BaseEmployeeSerializer):
     class Meta:
         model = Employee
-        exclude = ['company', 'created_at', 'updated_at', 'deactivated_at', 'termination_date', 'is_active']
+        exclude = ['company', 'created_at', 'updated_at', 'termination_date', 'is_active']
 
     def validate(self, data):
         cpf = data.get("cpf")
