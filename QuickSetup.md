@@ -84,7 +84,7 @@ Recomendo que crie o superuser antes de iniciar o sistema. Use o comando
 
 ```bash
 python manage.py createsuperuser
-´´´
+```
 
 Informe um cnpj válido, pois há validação na criação!!! Guarde seus dados de login e senha
 
