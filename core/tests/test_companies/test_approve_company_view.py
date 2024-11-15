@@ -34,7 +34,7 @@ class ApproveCompanyViewTest(APITestCase):
         """Teste de aprovação bem-sucedida de uma empresa"""
         response = self.client.patch(self.url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn(f"A empresa {self.company.business_name} foi aprovada com sucesso!", response.data["message"])
+        self.assertIn(f"The company {self.company.business_name} has been successfully approved!", response.data["detail"])
 
         self.company.refresh_from_db()
         self.assertTrue(self.company.is_approved)
@@ -46,7 +46,7 @@ class ApproveCompanyViewTest(APITestCase):
 
         response = self.client.patch(self.url, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn(f"A empresa {self.company.business_name} já está aprovada.", response.data["message"])
+        self.assertIn(f"The company {self.company.business_name} is already approved.", response.data["detail"])
 
     def test_approve_company_not_found(self):
         """Teste para empresa que não existe"""

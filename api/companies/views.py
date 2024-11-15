@@ -1,8 +1,8 @@
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
-from core.serializers.company_serializer import CompanySerializer,  CompanyDetailsSerializer, \
-    CompanyUpdateSerializer, CompanyFilteredSerializer
+from core.serializers.company_serializer import CompanySerializer, CompanyDetailsSerializer, \
+    CompanyUpdateSerializer, CompanyFilteredSerializer, ApproveCompanySerializer, InactivateCompanySerializer
 from core.serializers.jwt_serializer import CustomTokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from core.entities.company import Company
@@ -31,7 +31,7 @@ class CreateCompanyView(generics.CreateAPIView):
 
 class ApproveCompanyView(generics.UpdateAPIView):
     queryset = Company.objects.all()
-    serializer_class = CompanySerializer
+    serializer_class = ApproveCompanySerializer
     permission_classes = [IsAdminUser]
 
     def update(self, request, *args, **kwargs):
@@ -75,7 +75,7 @@ class CompanyUpdateView(generics.UpdateAPIView):
     lookup_field = 'id'
 
     def update(self, request, *args, **kwargs):
-        super().update(self, request, *args, **kwargs)
+        super().update(request,*args, **kwargs)
         return Response(
             {"detail": "Company successfully updated!"},
             status=status.HTTP_204_NO_CONTENT)
@@ -84,7 +84,7 @@ class CompanyUpdateView(generics.UpdateAPIView):
 class InactivateCompanyView(generics.UpdateAPIView):
     permission_classes = [IsAdminUser]
     queryset = Company.objects.all()
-    serializer_class = CompanySerializer
+    serializer_class = InactivateCompanySerializer
 
     def update(self, request, *args, **kwargs):
         super().update(request, *args, **kwargs)

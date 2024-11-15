@@ -47,16 +47,21 @@ class InactivateCompanyViewTest(APITestCase):
             is_approved=False
         )
 
+    def test_inactivate_nonexistent_company(self):
+        """Teste para tentar inativar uma empresa que não existe"""
+        url = reverse('inactivate_company', kwargs={'pk': 9999})
+        response = self.client.patch(url, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
     def test_inactivate_active_company(self):
         """Teste para inativar uma empresa ativa com sucesso"""
         url = reverse('inactivate_company', kwargs={'pk': self.company.pk})
         response = self.client.patch(url, format='json')
 
-        # Verifica se o status é 200 OK e se a mensagem é a esperada
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["detail"], "Empresa inativada com sucesso!")
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(response.data["detail"], "Company successfully inactivated!")
 
-        # Verifica se a empresa foi realmente inativada
         self.company.refresh_from_db()
         self.assertFalse(self.company.is_active)
         self.assertFalse(self.company.is_approved)
@@ -66,14 +71,5 @@ class InactivateCompanyViewTest(APITestCase):
         url = reverse('inactivate_company', kwargs={'pk': self.inactive_company.pk})
         response = self.client.patch(url, format='json')
 
-        # Verifica se o status é 400 Bad Request e se a mensagem é a esperada
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data["detail"], "Empresa já está inativa.")
-
-    def test_inactivate_nonexistent_company(self):
-        """Teste para tentar inativar uma empresa que não existe"""
-        url = reverse('inactivate_company', kwargs={'pk': 9999})  # ID inexistente
-        response = self.client.patch(url, format='json')
-
-        # Verifica se o status é 404 Not Found
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data["detail"], "The company is already inactive.")

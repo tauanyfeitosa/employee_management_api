@@ -10,7 +10,6 @@ class FilteredCompaniesViewTest(APITestCase):
     def setUp(self):
         self.url = reverse('filtered_companies')
 
-        # Criar e autenticar um usuário admin
         self.admin_user = get_user_model().objects.create_superuser(
             cnpj="77009125000107",
             password="adminpassword",
@@ -24,10 +23,8 @@ class FilteredCompaniesViewTest(APITestCase):
             country="Admin Country"
         )
 
-        # Autentica o usuário admin para todas as requisições
         self.client.force_authenticate(user=self.admin_user)
 
-        # Criação de empresas para os testes
         self.company1 = Company.objects.create(
             cnpj="75263924000180",
             name="Empresa Teste 1",
@@ -74,6 +71,6 @@ class FilteredCompaniesViewTest(APITestCase):
 
     def test_filter_unauthorized(self):
         """Teste para verificar o acesso negado ao endpoint sem permissão de admin"""
-        self.client.force_authenticate(user=None)  # Remove autenticação para simular acesso não autorizado
+        self.client.force_authenticate(user=None)
         response = self.client.get(self.url, {'city': 'Cidade 1'})
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)

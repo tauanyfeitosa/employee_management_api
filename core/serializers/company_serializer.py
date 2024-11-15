@@ -93,6 +93,17 @@ class CompanyUpdateSerializer(serializers.ModelSerializer):
             if isinstance(field, serializers.CharField):
                 field.allow_blank = True
 
+    def validate(self, data):
+        restricted_fields = {'cnpj', 'id', 'name', 'password'}
+        for field in restricted_fields:
+            if field in self.initial_data:
+                raise serializers.ValidationError({field: "This field cannot be updated."})
+
+        if all(value in [None, '', []] for value in data.values()):
+            raise serializers.ValidationError("No fields were sent for update.")
+
+        return data
+
     def update(self, instance, validated_data):
         for attr, value in validated_data.items():
             if value not in [None, '', []]:
