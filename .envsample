@@ -1,0 +1,5 @@
+POSTGRES_USER=_seu_usuario
+POSTGRES_PASSWORD=sua_senha
+POSTGRES_DB=employee_management_db
+POSTGRES_HOST=postgres
+POSTGRES_PORT=5432
