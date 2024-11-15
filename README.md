@@ -17,7 +17,7 @@
 
 Antes de começarmos, pedimos que acessem o link abaixo para as configurações do sistema:
 
-Clique aqui: [QuickSetup](add link)
+Clique aqui: [QuickSetup](https://github.com/tauanyfeitosa/employee_management_api/blob/master/QuickSetup.md)
 
 Após essas configurações, vamos conhecer um pouco mais sobre o projeto em si.
 
@@ -107,7 +107,7 @@ A arquitetura tem uma organização tem uma organização pensada na modularidad
 
 Abaixo, veremos o funcionamento completo da aplicação, bem como onde achar os materiais de apoio (API Collection e payloads de exemplo). Recomendo o uso do Postman para testar os endpoints da api, bem como o PyCharm como IDE para o projeto. Fiz o uso do Rancher para que o projeto fosse rodado em docker.
 
-Assumindo que seguiu todos os passos do QuickSetup, você deve ter agora um projeto rodando e pronto para ser utilizado! Pois bem, vamos ao fluxo de funcionamento!
+Assumindo que seguiu todos os passos do [QuickSetup](https://github.com/tauanyfeitosa/employee_management_api/blob/master/QuickSetup.md), você deve ter agora um projeto rodando e pronto para ser utilizado! Pois bem, vamos ao fluxo de funcionamento!
 O projeto foi desenvolvido para ser um sistema para que empresas possam gerenciar seus funcionários. No entanto, pensando neste ponto, é comum pensarmos que há uma empresa acima das demais, que além de poder fazer uso do sistema para gerenciar seus próprios funcionários, também é responsável por gerenciar as empresas (mas sem acesso aos dados dos colaboradores que não sejam de sua empresa). Para deixar o DjangoAdmin livre de sobreposições (para ocasiões necessárias), o gerenciamento das empresas também é feito através de endpoints. E, embora tenha sido dito que não seria necessário um endpoint para criação de empresas (e de fato não seria), foi criado para que a própria empresa de gerenciamento pudesse ter sua interface fora do djangoAdmin.
 
 ## Create Company
@@ -131,7 +131,7 @@ Seu login depende tanto do is_activate quando do is_approved, ambos devem ser ve
 
 ## Approve Company
 
-Agora que temos um usuário diferente do createsuperuser (criado através do tutorial no QuickSetup), vamos usar as credenciais do superuser para fazer login! Sobre os tokens para acesso, fique tranquilo! Você não precisará passar o token para cada endpoint toda vez, o processo foi automatizado. Peço que verifique na sua API Collection se está tudo certo com os scripts e autorizações antes de continuarmos com o endpoint!
+Agora que temos um usuário diferente do createsuperuser (criado através do tutorial no [QuickSetup](https://github.com/tauanyfeitosa/employee_management_api/blob/master/QuickSetup.md)), vamos usar as credenciais do superuser para fazer login! Sobre os tokens para acesso, fique tranquilo! Você não precisará passar o token para cada endpoint toda vez, o processo foi automatizado. Peço que verifique na sua API Collection se está tudo certo com os scripts e autorizações antes de continuarmos com o endpoint!
 
 - OLhe se o script abaixo está presente tanto no endpoint de Login quanto no de Refresh:
 ![image](https://github.com/user-attachments/assets/0bc63f4b-7ec6-406c-9c5d-1e98118bd617)
