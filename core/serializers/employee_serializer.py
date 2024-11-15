@@ -71,13 +71,16 @@ class EmployeeUpdateSerializer(BaseEmployeeSerializer):
 
         for field in restricted_fields:
             if field in self.initial_data:
-                raise serializers.ValidationError({field: "Este campo não pode ser atualizado."})
+                raise serializers.ValidationError({field: "This field cannot be updated."})
 
         return data
 
     def update(self, instance, validated_data):
+        if all(value in [None, '', []] for value in validated_data.values()):
+            raise serializers.ValidationError("No fields were sent for update.")
+
         for attr, value in validated_data.items():
-            if value not in [None, '', []]:  # Ignorar campos vazios
+            if value not in [None, '', []]:
                 setattr(instance, attr, value)
         instance.save()
         return instance

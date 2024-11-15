@@ -20,8 +20,8 @@ class CreateCompanyView(generics.CreateAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()  # Salva a nova empresa no banco de dados
-        business_name = serializer.data.get("business_name")  # Acessa o business_name da nova empresa
+        serializer.save()
+        business_name = serializer.data.get("business_name")
         headers = self.get_success_headers(serializer.data)
         return Response(
             f"Empresa {business_name} cadastrada com sucesso!",
@@ -35,17 +35,12 @@ class ApproveCompanyView(generics.UpdateAPIView):
     permission_classes = [IsAdminUser]
 
     def update(self, request, *args, **kwargs):
+        super().update(request, *args, **kwargs)
         company = self.get_object()
-        if company.is_approved:
-            return Response(
-                {"message": f"A empresa {company.business_name} já está aprovada."},
-                status=status.HTTP_400_BAD_REQUEST)
-
-        company.is_approved = True
-        company.save()
         return Response(
-            {"message": f"A empresa {company.business_name} foi aprovada com sucesso!"},
-            status=status.HTTP_200_OK)
+            {"detail": f"The company {company.business_name} has been successfully approved!"},
+            status=status.HTTP_200_OK
+        )
 
 
 class AllCompaniesView(generics.ListAPIView):
@@ -79,6 +74,12 @@ class CompanyUpdateView(generics.UpdateAPIView):
     queryset = Company.objects.all()
     lookup_field = 'id'
 
+    def update(self, request, *args, **kwargs):
+        super().update(self, request, *args, **kwargs)
+        return Response(
+            {"detail": "Company successfully updated!"},
+            status=status.HTTP_204_NO_CONTENT)
+
 
 class InactivateCompanyView(generics.UpdateAPIView):
     permission_classes = [IsAdminUser]
@@ -86,13 +87,10 @@ class InactivateCompanyView(generics.UpdateAPIView):
     serializer_class = CompanySerializer
 
     def update(self, request, *args, **kwargs):
-        instance = self.get_object()
-        if not instance.is_active:
-            return Response({"detail": "Empresa já está inativa."}, status=status.HTTP_400_BAD_REQUEST)
-
-        instance.is_active = False
-        instance.is_approved = False
-        instance.save()
-        return Response({"detail": "Empresa inativada com sucesso!"}, status=status.HTTP_200_OK)
+        super().update(request, *args, **kwargs)
+        return Response(
+            {"detail": "Company successfully inactivated!"},
+            status=status.HTTP_204_NO_CONTENT
+        )
 
 

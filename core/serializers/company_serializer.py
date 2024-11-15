@@ -34,7 +34,6 @@ class CompanyDetailsSerializer(serializers.ModelSerializer):
                   'neighborhood', 'city', 'state', 'country', 'is_active', 'is_approved']
 
 
-
 class CompanyFilteredSerializer(serializers.ModelSerializer):
     class Meta:
         model = Company
@@ -48,6 +47,38 @@ class CompanyFilteredSerializer(serializers.ModelSerializer):
             return use_case.execute(filters=filters)
         except FieldError as e:
             raise serializers.ValidationError({"detail": str(e)})
+
+
+class ApproveCompanySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Company
+        fields = ['is_approved']
+        read_only_fields = ['is_approved']
+
+    def update(self, instance, validated_data):
+        if instance.is_approved:
+            raise serializers.ValidationError(
+                {"detail": f"The company {instance.business_name} is already approved."}
+            )
+
+        instance.is_approved = True
+        instance.save()
+        return instance
+
+
+class InactivateCompanySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Company
+        fields = ['is_active', 'is_approved']
+        read_only_fields = ['is_active', 'is_approved']
+
+    def update(self, instance, validated_data):
+        if not instance.is_active:
+            raise serializers.ValidationError({"detail": "The company is already inactive."})
+
+        instance.is_active = False
+        instance.save()
+        return instance
 
 
 class CompanyUpdateSerializer(serializers.ModelSerializer):

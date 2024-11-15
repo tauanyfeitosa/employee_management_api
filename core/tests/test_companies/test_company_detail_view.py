@@ -8,7 +8,7 @@ from core.entities.company import Company
 class CompanyDetailViewTest(APITestCase):
 
     def setUp(self):
-        # Criação e autenticação de um usuário admin
+
         self.admin_user = get_user_model().objects.create_superuser(
             cnpj="77009125000107",
             password="adminpassword",
@@ -37,7 +37,6 @@ class CompanyDetailViewTest(APITestCase):
             is_active=True
         )
 
-        # URLs para os testes
         self.detail_url_existing = reverse('company_detail', kwargs={'id': self.company.id})
         self.detail_url_nonexistent = reverse('company_detail', kwargs={'id': 9999})
 

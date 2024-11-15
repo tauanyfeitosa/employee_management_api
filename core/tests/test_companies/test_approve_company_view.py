@@ -4,6 +4,7 @@ from django.urls import reverse
 from core.entities.company import Company
 from django.contrib.auth import get_user_model
 
+
 class ApproveCompanyViewTest(APITestCase):
 
     def setUp(self):
@@ -35,24 +36,20 @@ class ApproveCompanyViewTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn(f"A empresa {self.company.business_name} foi aprovada com sucesso!", response.data["message"])
 
-        # Verifica se o campo is_approved foi atualizado
         self.company.refresh_from_db()
         self.assertTrue(self.company.is_approved)
 
     def test_approve_company_already_approved(self):
         """Teste para empresa que já está aprovada"""
-        # Define a empresa como já aprovada
         self.company.is_approved = True
         self.company.save()
 
-        # Faz a requisição de aprovação novamente
         response = self.client.patch(self.url, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn(f"A empresa {self.company.business_name} já está aprovada.", response.data["message"])
 
     def test_approve_company_not_found(self):
         """Teste para empresa que não existe"""
-        # Tenta aprovar uma empresa com um ID inexistente
         url = reverse('approve_company', kwargs={'pk': 9999})
         response = self.client.patch(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

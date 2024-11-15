@@ -7,7 +7,6 @@ from django.contrib.auth import get_user_model
 class AllCompaniesViewTest(APITestCase):
 
     def setUp(self):
-        # Cria um usuário administrador e o autentica
         self.admin_user = get_user_model().objects.create_superuser(
             cnpj="12345678000195",
             password="adminpassword",
@@ -41,15 +40,13 @@ class AllCompaniesViewTest(APITestCase):
             is_approved=True
         )
 
-        # Define a URL para o endpoint de listar todas as empresas
-        self.url = reverse('all_companies')  # Nome da URL, ajuste conforme sua configuração
+        self.url = reverse('all_companies')
 
     def test_list_all_companies_success(self):
         """Teste para verificar o retorno de todas as empresas para um admin autenticado"""
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        # Verifica os dados retornados
         for company_data in response.data:
             self.assertIn("id", company_data)
             self.assertIn("cnpj", company_data)
@@ -58,7 +55,7 @@ class AllCompaniesViewTest(APITestCase):
     def test_list_all_companies_no_permission(self):
         """Teste para verificar a resposta quando o usuário não é um admin"""
         non_admin_user = get_user_model().objects.create_user(
-            cnpj="82409311000173",  # Exemplo de CNPJ válido
+            cnpj="82409311000173",
             password="senha123",
             name="Test User",
             business_name="Test Business"

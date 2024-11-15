@@ -17,7 +17,7 @@ class CreateEmployeeView(generics.CreateAPIView):
 
     def create(self, request, *args, **kwargs):
         response = super().create(request, *args, **kwargs)
-        return Response({"message": "Employee created successfully", "data": response.data},
+        return Response({"detail": "Employee created successfully", "data": response.data},
                         status=status.HTTP_201_CREATED)
 
 
@@ -57,10 +57,10 @@ class InactivateEmployeeView(generics.UpdateAPIView):
     permission_classes = [IsAuthenticated]
 
     def update(self, request, *args, **kwargs):
-        response = super().update(request, *args, **kwargs)
+        super().update(request, *args, **kwargs)
         return Response(
-            {"message": "Funcionário inativado com sucesso!"},
-            status=status.HTTP_200_OK)
+            {"detail": "Employee successfully inactivated!"},
+            status=status.HTTP_204_NO_CONTENT)
 
 
 class EmployeeUpdateView(generics.UpdateAPIView):
@@ -68,4 +68,10 @@ class EmployeeUpdateView(generics.UpdateAPIView):
     serializer_class = EmployeeUpdateSerializer
     queryset = Employee.objects.all()
     lookup_field = 'id'
+
+    def update(self, request, *args, **kwargs):
+        super().update(request, *args, **kwargs)
+        return Response(
+            {"detail": "Employee updated successfully!"},
+            status=status.HTTP_204_NO_CONTENT)
 

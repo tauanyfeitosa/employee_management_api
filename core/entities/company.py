@@ -59,6 +59,8 @@ class Company(AbstractBaseUser, PermissionsMixin):
             self.deactivated_at = timezone.now()
         elif self.is_active and self.deactivated_at is not None:
             self.deactivated_at = None
+        if not self.is_active:
+            self.is_approved = False
         super().save(*args, **kwargs)
 
     def __str__(self):
