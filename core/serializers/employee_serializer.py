@@ -66,6 +66,17 @@ class EmployeeUpdateSerializer(BaseEmployeeSerializer):
             if isinstance(field, serializers.CharField):
                 field.allow_blank = True
 
+    def validate_is_active(self, value):
+        """
+        Valida o campo is_active.
+        """
+        current_is_active = self.instance.is_active
+        if not current_is_active and value is True:
+            cpf = self.instance.cpf
+            company = self.instance.company
+            CreateOrUpdateEmployeeUseCase.validate_is_active_update(cpf, company, value, current_is_active)
+        return value
+
     def validate(self, data):
         restricted_fields = {'cpf', 'company', 'created_at', 'updated_at'}
 

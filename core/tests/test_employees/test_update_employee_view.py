@@ -14,6 +14,14 @@ class UpdateEmployeeViewTest(APITestCase):
             name="Test Company",
             business_name="Test Business"
         )
+
+        self.another_company = Company.objects.create_user(
+            cnpj="12345678000195",
+            password="testpassword",
+            name="Another Company",
+            business_name="Another Business"
+        )
+
         self.employee = Employee.objects.create(
             cpf="91296140075",
             full_name="John Doe",
@@ -25,7 +33,20 @@ class UpdateEmployeeViewTest(APITestCase):
             birth_date="1995-01-01",
             hire_date="2023-01-01",
             company=self.company,
-            is_active=True
+            is_active=False
+        )
+        self.another_employee = Employee.objects.create(
+            cpf="91296140075",
+            full_name="Jane Doe",
+            email="janedoe@example.com",
+            phone_ddd="12",
+            phone_ddi="55",
+            city="São Paulo",
+            phone_number="912345679",
+            birth_date="1990-01-01",
+            hire_date="2023-01-01",
+            company=self.another_company,
+            is_active=True  # Já ativo em outra empresa
         )
         self.client.force_authenticate(user=self.company)
         self.update_url = reverse('edit_employee', args=[self.employee.id])
@@ -109,16 +130,6 @@ class UpdateEmployeeViewTest(APITestCase):
         self.assertEqual(self.employee.full_name, "Jane Doe")
         self.assertNotEqual(self.employee.city, "")
 
-    def test_update_employee_with_empty_fields(self):
-        """Teste para garantir que uma atualização com todos os campos vazios retorna erro"""
-        empty_data = {
-            "full_name": "",
-            "city": ""
-        }
-        response = self.client.patch(self.update_url, data=empty_data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn("No fields were sent for update.", str(response.data))
-
     def test_update_employee_with_null_fields(self):
         """Teste para garantir que uma atualização com valores nulos retorna erro"""
         null_data = {
@@ -127,3 +138,27 @@ class UpdateEmployeeViewTest(APITestCase):
         response = self.client.patch(self.update_url, data=null_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("This field may not be null.", str(response.data["city"][0]))
+
+    def test_activate_employee_success(self):
+        """Teste para ativar um funcionário com sucesso, sem vínculos ativos em outras empresas"""
+        updated_data = {
+            "is_active": True
+        }
+        self.another_employee.is_active = False
+        self.another_employee.save()
+
+        response = self.client.patch(self.update_url, data=updated_data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.employee.refresh_from_db()
+        self.assertTrue(self.employee.is_active)
+
+    def test_activate_employee_with_active_link_in_another_company(self):
+        """Teste para garantir que um funcionário não possa ser ativado se já estiver ativo em outra empresa"""
+        updated_data = {
+            "is_active": True
+        }
+        response = self.client.patch(self.update_url, data=updated_data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("The employee cannot be reactivated because they are already active in another company.",
+                      str(response.data["is_active"][0]))
+

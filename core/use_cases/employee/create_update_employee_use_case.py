@@ -73,3 +73,15 @@ class CreateOrUpdateEmployeeUseCase:
             else:
                 raise ValidationError("The employee registration already exists, update the employee's "
                                       "data in the company.")
+
+    @staticmethod
+    def validate_is_active_update(cpf, company, is_active, previous_is_active):
+        """
+        Valida a atualização do campo is_active. Se estiver sendo atualizado de False para True,
+        verifica se o funcionário está ativo em outra empresa.
+        """
+        if not previous_is_active and is_active:
+            active_in_other_company = Employee.objects.filter(cpf=cpf, is_active=True).exclude(company=company).exists()
+            if active_in_other_company:
+                raise ValidationError(
+                    "The employee cannot be reactivated because they are already active in another company.")
